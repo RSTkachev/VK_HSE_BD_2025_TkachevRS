@@ -1,0 +1,30 @@
+services:
+  zookeeper:
+    image: zookeeper:3.8
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_CLIENT_PORT: 2181
+      ZOO_STANDALONE_ENABLED: "true"
+    restart: unless-stopped
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    hostname: clickhouse
+    environment:
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: admin
+      CLICKHOUSE_DB: default
+    depends_on:
+      - zookeeper
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./data:/var/lib/clickhouse
+      - ./config.d/macros.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./config.d/zookeeper.xml:/etc/clickhouse-server/config.d/zookeeper.xml
+    restart: unless-stopped
