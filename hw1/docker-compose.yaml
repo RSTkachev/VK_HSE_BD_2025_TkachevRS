@@ -1,0 +1,23 @@
+services:
+  master:
+    platform: linux/amd64
+    image: apache/hadoop:3.3.6
+    container_name: master
+    hostname: master
+    ports:
+      - "9870:9870"
+      - "8088:8088"
+      - "8020:8020"
+      - "8032:8032"
+    volumes:
+      - ./entrypoint.sh:/home/entrypoint.sh
+    command: ["/bin/bash", "/home/entrypoint.sh"]
+    
+  client:
+    platform: linux/amd64
+    build: .
+    container_name: client
+    tty: true
+    stdin_open: true
+    depends_on:
+      - master
